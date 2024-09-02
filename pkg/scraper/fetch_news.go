@@ -20,6 +20,9 @@ func fetchBBCNews(url string) ([]Article, error) {
 	// Create a new collector
 	c := colly.NewCollector()
 
+	// Set the User-Agent to mimic a web browser
+	c.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+
 	// Set up a callback for when a HTML element is found
 	c.OnHTML(".gs-c-promo-heading", func(e *colly.HTMLElement) {
 		title := e.Text
@@ -53,7 +56,7 @@ func fetchBBCNews(url string) ([]Article, error) {
 	return articles, nil
 }
 
-func FetchingWrapper() {
+func main() {
 	url := "https://www.bbc.com/news"
 	articles, err := fetchBBCNews(url)
 	if err != nil {
