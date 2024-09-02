@@ -27,7 +27,7 @@ func fetchGenericNews(url string) ([]Article, error) {
 
 	// Create a new collector
 	c := colly.NewCollector(
-		colly.AllowedDomains("nytimes.com", "bbc.com", "cnn.com"),                                                                              // Add other domains as needed
+		colly.AllowedDomains("www.nytimes.com", "www.bbc.com", "www.cnn.com"),                                                                  // Add other domains as needed
 		colly.UserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"), // Mimic browser user agent
 	)
 
@@ -79,13 +79,26 @@ func fetchGenericNews(url string) ([]Article, error) {
 
 // main is the entry point of the application.
 func main() {
-	url := "https://www.nytimes.com"
-	articles, err := fetchGenericNews(url)
+	NYurl := "https://www.nytimes.com"
+	NYarticles, err := fetchGenericNews(NYurl)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	for _, article := range articles {
+	for _, article := range NYarticles {
+		fmt.Printf("Title: %s\n", article.Title)
+		fmt.Printf("Content: %s\n", article.Content)
+		fmt.Println()
+	}
+	fmt.Println("\n \n \n \n  BBC:")
+
+	BBCurl := "https://www.bbc.com"
+	BBCarticles, err := fetchGenericNews(BBCurl)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, article := range BBCarticles {
 		fmt.Printf("Title: %s\n", article.Title)
 		fmt.Printf("Content: %s\n", article.Content)
 		fmt.Println()
