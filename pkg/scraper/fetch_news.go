@@ -78,7 +78,7 @@ func fetchGenericNews(url string) ([]Article, error) {
 }
 
 // main is the entry point of the application.
-func main() {
+func Fetchmain() {
 	NYurl := "https://www.nytimes.com"
 	NYarticles, err := fetchGenericNews(NYurl)
 	if err != nil {
