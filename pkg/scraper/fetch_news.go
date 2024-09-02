@@ -32,7 +32,7 @@ func fetchBBCNews(url string) ([]Article, error) {
 	c := colly.NewCollector()
 
 	// Set the User-Agent to mimic a web browser
-	c.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+	//c.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
 
 	// Set up a callback for when an HTML element with class 'gs-c-promo-heading' is found
 	c.OnHTML(".gs-c-promo-heading", func(e *colly.HTMLElement) {
@@ -73,12 +73,14 @@ func fetchBBCNews(url string) ([]Article, error) {
 // It calls the fetchBBCNews function with the BBC News URL, handles any errors that occur,
 // and outputs the results to the console.
 func main() {
-	url := "https://www.bbc.com/news"
+	url := "https://www.nytimes.com"
 	articles, err := fetchBBCNews(url)
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	//fmt.Print(articles)
+	//fmt.Println("here")
 	for _, article := range articles {
 		fmt.Printf("Title: %s\n", article.Title)
 		fmt.Printf("Content: %s\n", article.Content)
