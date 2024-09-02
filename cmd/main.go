@@ -22,4 +22,26 @@ func main() {
 	json.NewDecoder(resp.Body).Decode(&result)
 
 	fmt.Println("Sentiment Analysis:", result)
+	fmt.Println(interpretSentiment(result))
+}
+
+// interpretSentiment interprets sentiment scores and returns a human-readable sentiment description.
+func interpretSentiment(sentimentScores map[string]interface{}) string {
+	// Extracting and converting the values from the map
+	compound, ok := sentimentScores["compound"].(float64)
+	if !ok {
+		return "Error: Unable to interpret sentiment scores."
+	}
+
+	// Determining the sentiment based on the compound score
+	var sentiment string
+	if compound >= 0.05 {
+		sentiment = "Positive"
+	} else if compound <= -0.05 {
+		sentiment = "Negative"
+	} else {
+		sentiment = "Neutral"
+	}
+
+	return fmt.Sprintf("Sentiment Analysis Result:\n- Compound Score: %.4f\n- Sentiment: %s", compound, sentiment)
 }
