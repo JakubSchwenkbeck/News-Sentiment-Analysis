@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	text := map[string]string{"text": "The service was amazing!"}
+	text := map[string]string{"text": "The service was truly a great and amazing!"}
 	jsonData, _ := json.Marshal(text)
 
 	resp, err := http.Post("http://localhost:5000/vader", "application/json", bytes.NewBuffer(jsonData))
@@ -23,6 +23,7 @@ func main() {
 
 	fmt.Println("Sentiment Analysis:", result)
 	fmt.Println(interpretSentiment(result))
+
 }
 
 // interpretSentiment interprets sentiment scores and returns a human-readable sentiment description.
