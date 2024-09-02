@@ -78,7 +78,7 @@ func fetchGenericNews(url string) ([]Article, error) {
 }
 
 // main is the entry point of the application.
-func Fetchmain() {
+func Fetchmain() []Article {
 	NYurl := "https://www.nytimes.com"
 	NYarticles, err := fetchGenericNews(NYurl)
 	if err != nil {
@@ -98,9 +98,13 @@ func Fetchmain() {
 		log.Fatal(err)
 	}
 
-	for _, article := range BBCarticles {
+	for _, article- := range BBCarticles {
 		fmt.Printf("Title: %s\n", article.Title)
 		fmt.Printf("Content: %s\n", article.Content)
 		fmt.Println()
 	}
+	// Combine both slices of articles
+	combinedArticles := append(NYarticles, BBCarticles...)
+	return combinedArticles
+
 }
