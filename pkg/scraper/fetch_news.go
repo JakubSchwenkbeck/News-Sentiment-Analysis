@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/gocolly/colly"
 )
@@ -13,44 +14,52 @@ type Article struct {
 	Content string // Content of the news article
 }
 
-// fetchNews fetches news articles from any news website.
+// fetchGenericNews attempts to scrape news articles from any news website by guessing common selectors.
 //
 // Parameters:
-//   - url (string): The URL of the news website to scrape.
-//   - titleSelector (string): The CSS selector to find article titles.
-//   - contentSelector (string): The CSS selector to find article content.
-//   - linkPrefix (string): The prefix to add to relative links.
+//   - url (string): The URL of the website to scrape.
 //
 // Returns:
 //   - ([]Article, error): A slice of Article structs containing the title and content of news articles,
 //     and an error if any occurs during the process.
-func fetchNews(url, titleSelector, contentSelector, linkPrefix string) ([]Article, error) {
+func fetchGenericNews(url string) ([]Article, error) {
 	var articles []Article
 
 	// Create a new collector
-	c := colly.NewCollector()
+	c := colly.NewCollector(
+		colly.AllowedDomains("nytimes.com", "bbc.com", "cnn.com"),                                                                              // Add other domains as needed
+		colly.UserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"), // Mimic browser user agent
+	)
 
-	// Set the User-Agent to mimic a web browser
-	c.UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-
-	// Set up a callback for when an HTML element with the specified titleSelector is found
-	c.OnHTML(titleSelector, func(e *colly.HTMLElement) {
+	// Find article titles by guessing common title tags
+	c.OnHTML("h1, h2, h3, .headline, .title", func(e *colly.HTMLElement) {
+		// Guess this is an article title
 		title := e.Text
-		link := e.Attr("href")
-		if link != "" && linkPrefix != "" {
-			fullLink := linkPrefix + link
-			c.Visit(fullLink)
-			articles = append(articles, Article{Title: title})
-		} else {
-			articles = append(articles, Article{Title: title})
+
+		// Only continue if the title is not empty
+		if strings.TrimSpace(title) == "" {
+			return
 		}
+
+		// Attempt to visit the link if it exists
+		link := e.Attr("href")
+		if link != "" {
+			if link[0] == '/' {
+				link = e.Request.AbsoluteURL(link)
+			}
+			c.Visit(link)
+		}
+
+		// Create a new article with the found title
+		articles = append(articles, Article{Title: title})
 	})
 
-	// Set up a callback for when an HTML element with the specified contentSelector is found
-	c.OnHTML(contentSelector, func(e *colly.HTMLElement) {
+	// Find article content by guessing common content tags
+	c.OnHTML("p, .content, .article-body, .story-body, .ssrcss-uf6wea-RichTextComponentWrapper", func(e *colly.HTMLElement) {
 		content := e.Text
-		if len(articles) > 0 {
-			articles[len(articles)-1].Content = content
+		if len(articles) > 0 && strings.TrimSpace(content) != "" {
+			// Append content to the last article in the list
+			articles[len(articles)-1].Content += content + "\n"
 		}
 	})
 
@@ -68,41 +77,15 @@ func fetchNews(url, titleSelector, contentSelector, linkPrefix string) ([]Articl
 	return articles, nil
 }
 
-// main is the entry point of the application. It fetches news articles from a specified news website
-// and prints the title and content of each article.
-//
-// It calls the fetchNews function with the required parameters, handles any errors that occur,
-// and outputs the results to the console.
+// main is the entry point of the application.
 func main() {
-	// Example usage for New York Times
 	url := "https://www.nytimes.com"
-	titleSelector := ".css-66vf3i"          // CSS selector for the article title
-	contentSelector := ".css-1fanzo5"       // CSS selector for the article content
-	linkPrefix := "https://www.nytimes.com" // Prefix to complete the relative URLs
-
-	articles, err := fetchNews(url, titleSelector, contentSelector, linkPrefix)
+	articles, err := fetchGenericNews(url)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	for _, article := range articles {
-		fmt.Printf("Title: %s\n", article.Title)
-		fmt.Printf("Content: %s\n", article.Content)
-		fmt.Println()
-	}
-
-	// Example usage for BBC
-	bbcURL := "https://www.bbc.com/news"
-	bbcTitleSelector := ".gs-c-promo-heading__title"
-	bbcContentSelector := ".ssrcss-uf6wea-RichTextComponentWrapper"
-	bbcLinkPrefix := "https://www.bbc.com"
-
-	bbcArticles, err := fetchNews(bbcURL, bbcTitleSelector, bbcContentSelector, bbcLinkPrefix)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	for _, article := range bbcArticles {
 		fmt.Printf("Title: %s\n", article.Title)
 		fmt.Printf("Content: %s\n", article.Content)
 		fmt.Println()
