@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/JakubSchwenkbeck/News-Sentiment-Analysis/pkg/scraper"
 )
 
 // main is the entry point of the application. It sends a text for sentiment analysis
@@ -36,6 +38,23 @@ func main() {
 	fmt.Println("VADER Sentiment Analysis:")
 	fmt.Println(vaderResult)
 	fmt.Println(interpretSentiment(vaderResult))
+
+	articles := scraper.Fetchmain()
+
+	NewsText := articles[7].Content
+
+	NewsjsonData, _ := json.Marshal(NewsText)
+
+	// Analyze using TextBlob
+	NewstextblobResult, err := analyzeSentiment("http://localhost:5000/vader", NewsjsonData)
+	if err != nil {
+		fmt.Println("TextBlob Error:", err)
+		return
+	}
+
+	fmt.Println("Article Title:" + articles[7].Title)
+	//fmt.Println("Article content: " + NewsText)
+	fmt.Println(NewstextblobResult)
 }
 
 // analyzeSentiment sends a JSON-encoded text to the specified sentiment analysis service
