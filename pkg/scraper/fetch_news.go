@@ -85,11 +85,11 @@ func Fetchmain() []Article {
 		log.Fatal(err)
 	}
 
-	for _, article := range NYarticles {
+	/*for _, article := range NYarticles {
 		fmt.Printf("Title: %s\n", article.Title)
 		fmt.Printf("Content: %s\n", article.Content)
 		fmt.Println()
-	}
+	}*/
 	fmt.Println("\n \n \n \n  BBC:")
 
 	BBCurl := "https://www.bbc.com"
@@ -98,11 +98,11 @@ func Fetchmain() []Article {
 		log.Fatal(err)
 	}
 
-	for _, article- := range BBCarticles {
+	/*for _, article := range BBCarticles {
 		fmt.Printf("Title: %s\n", article.Title)
 		fmt.Printf("Content: %s\n", article.Content)
 		fmt.Println()
-	}
+	}*/
 	// Combine both slices of articles
 	combinedArticles := append(NYarticles, BBCarticles...)
 	return combinedArticles
