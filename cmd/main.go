@@ -40,21 +40,26 @@ func main() {
 	fmt.Println(interpretSentiment(vaderResult))
 
 	articles := scraper.Fetchmain()
+	for i := 0; i < 110; i++ {
+		NewsText := articles[i].Content
+		if NewsText != "" {
+			//fmt.Print("THE NEWS TEXT ---------------------------------------- " + NewsText + " ------------------------------------------------------------------")
+			NewsJStext := map[string]string{"text": NewsText}
 
-	NewsText := articles[7].Content
+			NewsjsonData, _ := json.Marshal(NewsJStext)
 
-	NewsjsonData, _ := json.Marshal(NewsText)
+			// Analyze using TextBlob
+			NewstextblobResult, err := analyzeSentiment("http://localhost:5000/TextBlob", NewsjsonData)
+			if err != nil {
+				fmt.Println("TextBlob Error:", err)
+				return
+			}
 
-	// Analyze using TextBlob
-	NewstextblobResult, err := analyzeSentiment("http://localhost:5000/vader", NewsjsonData)
-	if err != nil {
-		fmt.Println("TextBlob Error:", err)
-		return
+			//	fmt.Println("Article Title:" + articles[7].Title)
+			//fmt.Println("Article content: " + NewsText)
+			fmt.Println(NewstextblobResult)
+		}
 	}
-
-	fmt.Println("Article Title:" + articles[7].Title)
-	//fmt.Println("Article content: " + NewsText)
-	fmt.Println(NewstextblobResult)
 }
 
 // analyzeSentiment sends a JSON-encoded text to the specified sentiment analysis service
