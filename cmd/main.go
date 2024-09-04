@@ -12,7 +12,7 @@ import (
 // main is the entry point of the application. It sends a text for sentiment analysis
 // to both TextBlob and VADER endpoints, then prints and interprets the results.
 func main() {
-	text := map[string]string{"text": "The service was truly a great and amazing!"}
+	text := map[string]string{"text": "The service was truly a great and amazing!I have mixed feelings abou the rest"}
 	jsonData, _ := json.Marshal(text)
 
 	// Analyze using TextBlob
@@ -48,7 +48,7 @@ func main() {
 	// Analyze using TextBlob
 	NewstextblobResult, err := analyzeSentiment("http://localhost:5000/vader", NewsjsonData)
 	if err != nil {
-		fmt.Println("TextBlob Error:", err)
+		fmt.Println("Vader Error:", err)
 		return
 	}
 
